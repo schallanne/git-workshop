@@ -22,7 +22,7 @@ object TodoList {
 
     lazy val result =
       <div class={ Style.root.htmlClass }>
-        You can add or remove todo items.<br /><br />
+        <p>You can add or remove todo items.</p>
 
         { addTodo }
 

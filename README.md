@@ -69,8 +69,8 @@ You are configuring git to use your society email in the folder
 
 1. Fork `zengularity/git-workshop` from the GitHub interface.
 
-2. In options settings, uncheck `merge commits` and `rebase merging`, keep only
-   `squash commit` checked.
+2. In the repository settings, under "Merge button" section, uncheck `merge commits` and `rebase merging`, 
+   and keep only `squash commit` checked.
 
 3. In branches settings, protect the master branch in the GitHub setting of
    your fork:
@@ -99,7 +99,9 @@ git clone
 sbt "~fastOptJS"
 ```
 
-4. Open `playground/index.html` on your browser.
+4. Open `playground/index.html` on your browser: file:///path/to/git-workshop/playground/index.html
+
+This will display a minimal UI, to manage a To-Do list.
 
 ## Get repository information on the CLI
 
@@ -129,7 +131,7 @@ git branch -a
 
 ## Add a new feature
 
-You are going to add an arrow which length is the number of todos.
+You are going to add an arrow whose length is the number of todos.
 
 ## Create a branch
 
@@ -141,12 +143,24 @@ git checkout -b arrow
 
 ## Add a visualization arrow of the todos
 
-Above the input which let you add todos, add an arrow `=====>`, with the number
-of equals corresponding to the number of todos.
+First open the source of the view to be updated: `playground/src/main/scala/playground/view/TodoList.scala`
 
-1. Initially 4 todos: `====>`
-2. A todo is added: `=====>`
-3. 2 todos are removed: `===>`
+Above the input field which let you add todos (see `addTodo` in the code), update the template so a `<div>` is added, with an "arrow" `=====>` as textual content.
+
+The goal is to have a number of `=` character in this "arrow" which corresponds to the number of todos (see the `todos` variables in the code).
+
+## Update the TodoList component
+
+1. Initially 2 todos: `==>`
+2. A todo is added (3): `===>`
+3. 2 todos are removed: `==>`
+
+> See the `ul` element in the code (and the `todoItem` function) to figure out how the reactive list (`Rx`) is done.
+> A possible code to add the expected `div` can be as bellow.
+
+```html
+<div>{ todos.map(_.map(_ => '=').mkString) }></div>
+```
 
 ## When you’re done, stage your files
 
@@ -197,6 +211,8 @@ git commit
 
 3. If you need to, add a description after a blank line.
 
+> If you want to commit files which were already added, `git commit -a` can be used without calling `git add`.
+
 ## Push your commit to your repository
 
 1. Push your commit to origin with:
@@ -234,12 +250,28 @@ git push -d origin arrow # delete,
 git push origin feature/arrow # then create
 ```
 
+> Note: It's not recommanded to rename a branch after a Pull Request has already been created.
+
 ## Improve the arrow
 
-You want to improve the arrow so that it give the information of done todos.
+Still on the `feature/arrow` branch, you want to improve the arrow so that it give the information of done todos.
 
-Colorize in green the number of equals in the arrow corresponding to the number
+The goal is to colorize in green the number of equals in the arrow corresponding to the number
 of completed todos.
+
+The previously added "arrow" `div` can be updated as bellow.
+
+```html
+<div>{ todos.map(_.map { item =>
+  val color = if (item.isCompleted) "green" else "silver"
+
+  <span style={s"color:$color"}>=</span>
+}) }></div>
+```
+
+## Test the changes
+
+In order to test this change, update the `val todos` in the code to set `isCompleted = true` for one of the initial items, and then check it's properly displayed in the UI.
 
 Don’t add your files nor make a commit at this point.
 
@@ -295,19 +327,22 @@ git status
 
 ## Prepare a new commit and push it to origin
 
-1. Let’s say you are using macOS, create `.DS_Store` in the repository with:
+1. Let’s say you are using Mac OS X, create `.DS_Store` in the repository with:
 
 ```bash
 touch .DS_Store
 ```
 
-2. Use a shortcut to add and commit your files:
+2. Using `git status` will indicate this newly created file is untracked.
+
+3. Add the file and commit it.
 
 ```bash
-git commit -a
+git add .DS_Store
+git commit
 ```
 
-2. Push it to origin.
+4. Push it to origin.
 
 ## Remove .DS_Store from your commit
 
@@ -319,9 +354,9 @@ Oops, you committed and pushed .DS_Store!
 git reset --soft HEAD^ # or HEAD~1
 ```
 
-2. Check the current status.
+2. At this point, `git status` indicates that the change about `.DS_Store` is back to be commited.
 
-3. Unstage `.DS_Store` with:
+3. In order to full unstage `.DS_Store`:
 
 ```bash
 git reset .DS_Store
@@ -343,12 +378,14 @@ it to either:
 - the project `.gitignore`,
 - or the global `~/.gitignore`.
 
-Since `.DS_Store` is specific to `macOS` users and not to the project, you are going to exclude it globally.
+Since `.DS_Store` is specific to Mac OS X users and not to the project, you are going to exclude it globally.
 
 ```bash
 echo ".DS_Store" >> ~/.gitignore
 git config --global core.excludesfile '~/.gitignore'
 ```
+
+> Note: Ignore rules specific to some environment (e.g. according the IDE) could rather be specified in the `.git/info/exclude`
 
 ## Prepare a pull request
 
@@ -360,7 +397,7 @@ git config --global core.excludesfile '~/.gitignore'
 
 3. You can give more information in the description if necessary.
 
-4. Add a *Quality Insurance* scenario in the description which indicate
+4. Add a *Quality Assurance* (QA) scenario in the description which indicate
    precisely the steps to check if your feature is valid or no.
 
 ```
@@ -387,22 +424,27 @@ git checkout master
 git checkout -b refactor/todo-list
 ```
 
+> It's recommanded not to create branch based on other previously created feature or task branch.
+
 ## Refactor (1/2)
 
-Rename `todos` to `items` in the `TodoList` component.
+Rename the `val todos` to `items` in the `TodoList` component 
+(see `playground/src/main/scala/playground/view/TodoList.scala`).
 
 ## End your day and push a WIP commit
 
 At the end of the day, that’s interesting to push your code even if it’s still
 WIP.
 
-1. Stage your files on the refactoring.
+1. Stage your files on the refactoring (`git add ...`).
 
-2. Create your WIP commit, you don’t bother with the naming:
+2. Create your WIP commit, you don’t bother with the naming.
 
 ```bash
 git commit -m "WIP"
 ```
+
+> As the file is already under SCM, `git commit -a -m "WIP"` could be used without prio `git add`
 
 3. Push it to origin.
 
@@ -412,7 +454,7 @@ Rename `isCompleted` to `isDone` in the `Todo` model.
 
 ## Melt you changes into the WIP commit
 
-1. Stage your files on the refactoring.
+1. Stage your files on the refactoring (`git add ...`).
 
 2. Check that the previous commit is the WIP commit before melting your staged
    changes into it.
@@ -433,7 +475,7 @@ order to modify the previous commit message.
 
 ## Push to origin and create a pull request
 
-1. Analyze what `git status` tells you.
+1. Check what `git status` tells you.
 
 2. Try to push your changes to origin with:
 
@@ -448,7 +490,7 @@ git push origin refactor/todo-list
 git push --force origin refactor/todo-list
 ```
 
-Beware, a force commit is risky, you can loose code in the process.
+Beware, a force commit is risky, and should not be used outside feature branches.
 
 4. Create a pull request from the GitHub interface, and think about the title
    and the description, which should contains a QA. Don’t forget to target your
@@ -460,17 +502,17 @@ Review the **refactor** pull request of the person on your right. Because you
 are picky, submit a comment to replace `isDone` by `isFinished` and request
 changes.
 
-## Modify your pull request
+## Update your pull request
 
 The person on your left requested changes on you pull request. Because you
 agree on his comment:
 
-1. replace `isDone` by `isFinished`,
-2. stage your modified files,
-3. create a fix commit,
-4. push it to your branch.
+1. Replace `isDone` by `isFinished`.
+2. Stage your modified files.
+3. Create a fix commit.
+4. Push it to your branch.
 
-You are creating a fix commit instead of ammending the last one, so that the
+You are creating a fix commit instead of amending the last one, so that the
 reviewer will see only new changes and will not have to review everything back
 again.
 
@@ -483,7 +525,7 @@ pull request.
 
 Now that your pull request is approved:
 
-1. click on “merge with squash”,
+1. Click on “Squash and merge”.
 
 2. Prepare a well-formed commit message:
 
@@ -496,8 +538,7 @@ Now that your pull request is approved:
 
 3. Merge the pull request and then delete the branch with the provided button.
 
-4. Check that you can still access to every commit you did in the GitHub
-   interface.
+4. Check that you can still access to every commit of the Pull Request in the GitHub UI (history is kept).
 
 ## Get the changes on master on your machine
 
@@ -508,7 +549,7 @@ git checkout master
 git pull
 ```
 
-2. Check that you refactor is in a single commit on your local master branch.
+2. Check that your refactoring is in a single commit on your local master branch (`git log ...`).
 
 3. Delete your feature branch with:
 
@@ -518,24 +559,25 @@ git branch -d refactor/todo-list
 
 ## Going back to the visualization arrow
 
-You want to merge your visualization arrow feature. Unfortunately, your feature
-now has conflicts with the master branch. You have the choice between rebasing
-and merging.
+You want to merge your `feature/arrow` branch.
+
+Unfortunately, your feature now has conflicts with the master branch.
+You have the choice between rebasing and merging.
 
 ## Rebasing vs. merging
 
 You’ll use rebase instead of merge. Instead of having a merge commit, you move
-the entire branch to begin on the tip of the branch you rebase from. See more
-details [here](https://www.atlassian.com/git/tutorials/merging-vs-rebasing).
+the entire branch to begin on the tip of the branch you rebase from.
+
+See more details [here](https://www.atlassian.com/git/tutorials/merging-vs-rebasing).
 
 That means:
 
-- it can be more complex than merging if you have multiple commits,
-- and you have to change the history :
-   - you risk (when handling conflicts) to introduce unwanted changes while losing the original (valid) changes forever,
-- but that will lead to a cleaner history,
-- and you’ll avoid strange and repetitive merge conflicts in case you merge
-  multiple times.
+- It can be more complex than merging if you have multiple commits.
+- You have to change the history :
+   - you risk (when handling conflicts) to introduce unwanted changes while losing the original (valid) changes forever.
+- That will lead to a cleaner history.
+- You’ll avoid strange and repetitive merge conflicts in case you merge multiple times.
 
 ## Rebase and resolve the conflicts
 
@@ -545,7 +587,7 @@ That means:
 git checkout ...
 ```
 
-2. Get remote changes and rebase from master with:
+2. Get the remote changes and rebase from master with:
 
 ```bash
 git fetch
