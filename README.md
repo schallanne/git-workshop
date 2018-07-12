@@ -69,8 +69,8 @@ You are configuring git to use your society email in the folder
 
 1. Fork `zengularity/git-workshop` from the GitHub interface.
 
-2. In the repository settings, under "Merge button" section, uncheck `merge commits` and `rebase merging`, 
-   and keep only `squash commit` checked.
+2. In the repository settings, under "Merge button" section, uncheck `merge
+   commits` and `rebase merging`, and keep only `squash commit` checked.
 
 3. In branches settings, protect the master branch in the GitHub setting of
    your fork:
@@ -81,6 +81,8 @@ You are configuring git to use your society email in the folder
 
 4. In the collaborators settings, add the person sitting at your left. He will
    review your pull requests.
+
+5. Accept the invitation of the person on your right.
 
 ## Setup the playground
 
@@ -99,7 +101,7 @@ git clone
 sbt "~fastOptJS"
 ```
 
-4. Open `playground/index.html` on your browser: file:///path/to/git-workshop/playground/index.html
+4. Open `file:///path/to/git-workshop/playground/index.html` on your browser.
 
 This will display a minimal UI, to manage a To-Do list.
 
@@ -143,22 +145,27 @@ git checkout -b arrow
 
 ## Add a visualization arrow of the todos
 
-First open the source of the view to be updated: `playground/src/main/scala/playground/view/TodoList.scala`
+First open the source of the view to be updated:
+`playground/src/main/scala/playground/view/TodoList.scala`
 
-Above the input field which let you add todos (see `addTodo` in the code), update the template so a `<div>` is added, with an "arrow" `=====>` as textual content.
+Above the input field which let you add todos (see `addTodo` in the code),
+update the template so a `<div>` is added, with an "arrow" `=====>` as textual
+content.
 
-The goal is to have a number of `=` character in this "arrow" which corresponds to the number of todos (see the `todos` variables in the code).
+The goal is to have a number of `=` character in this "arrow" which corresponds
+to the number of todos (see the `todos` variables in the code).
 
 ## Update the TodoList component
 
+Arrow update scenario:
+
 1. Initially 2 todos: `==>`
 2. A todo is added (3): `===>`
-3. 2 todos are removed: `==>`
+3. 2 todos are removed: `=>`
 
-> See the `ul` element in the code (and the `todoItem` function) to figure out how the reactive list (`Rx`) is done.
-> A possible code to add the expected `div` can be as bellow.
+A possible code to add the expected `div` can be as bellow:
 
-```html
+```scala
 <div>{ todos.map(_.map(_ => '=').mkString) }></div>
 ```
 
@@ -211,7 +218,11 @@ git commit
 
 3. If you need to, add a description after a blank line.
 
-> If you want to commit files which were already added, `git commit -a` can be used without calling `git add`.
+> If you want to commit files which were already added, `git commit -a` can be
+> used without calling `git add`.
+
+> Use `git commit --amend` if you need to change your commit message
+> afterward.
 
 ## Push your commit to your repository
 
@@ -250,14 +261,16 @@ git push -d origin arrow # delete,
 git push origin feature/arrow # then create
 ```
 
-> Note: It's not recommanded to rename a branch after a Pull Request has already been created.
+> It's not recommanded to rename a branch after a Pull Request has already been
+> created as it will close the PR.
 
 ## Improve the arrow
 
-Still on the `feature/arrow` branch, you want to improve the arrow so that it give the information of done todos.
+Still on the `feature/arrow` branch, you want to improve the arrow so that it
+gives the information of done todos.
 
-The goal is to colorize in green the number of equals in the arrow corresponding to the number
-of completed todos.
+The goal is to colorize in green the number of equals in the arrow
+corresponding to the number of completed todos.
 
 The previously added "arrow" `div` can be updated as bellow.
 
@@ -269,10 +282,6 @@ The previously added "arrow" `div` can be updated as bellow.
 }) }></div>
 ```
 
-## Test the changes
-
-In order to test this change, update the `val todos` in the code to set `isCompleted = true` for one of the initial items, and then check it's properly displayed in the UI.
-
 Don’t add your files nor make a commit at this point.
 
 ## Unexpected demo
@@ -280,6 +289,9 @@ Don’t add your files nor make a commit at this point.
 You forgot but you have a demo to present. You did not have time to test your
 work and prefer to show the previous version. You’ll use the stash feature to
 put your current work aside for the moment.
+
+> Stashed files are often forgotten, that’s usually used to store code very
+> temporarily. Prefer commits if you don’t want to loose code.
 
 ## Stash your files
 
@@ -311,7 +323,7 @@ git stash list
 
 ## Unstash your files
 
-The demo was a success!
+The demo was a success, congratulations!
 
 1. Unstash you files with:
 
@@ -319,73 +331,84 @@ The demo was a success!
 git stash pop
 ```
 
-2. Check that your last modified files are back available with:
+2. Check that your stash list is now empty with:
 
 ```bash
-git status
+git stash list
 ```
 
 ## Prepare a new commit and push it to origin
 
-1. Let’s say you are using Mac OS X, create `.DS_Store` in the repository with:
+1. Let’s say you are using a system that create a file named `.OS`. Create
+   this file with:
 
 ```bash
-touch .DS_Store
+touch .OS
 ```
 
 2. Using `git status` will indicate this newly created file is untracked.
 
-3. Add the file and commit it.
+3. Add `.OS` along with your modified files.
 
 ```bash
-git add .DS_Store
+git add .OS …
 git commit
 ```
 
 4. Push it to origin.
 
-## Remove .DS_Store from your commit
+## Remove .OS from your commit
 
-Oops, you committed and pushed .DS_Store!
+Oops, you committed and pushed .OS!
 
-1. Undo the last commit with:
-
-```bash
-git reset --soft HEAD^ # or HEAD~1
-```
-
-2. At this point, `git status` indicates that the change about `.DS_Store` is back to be commited.
-
-3. In order to full unstage `.DS_Store`:
+1. Remove `.OS` and stage it with:
 
 ```bash
-git reset .DS_Store
+git rm .OS
 ```
 
-4. Commit back with:
+2. Ammend the changes with the last commit with:
 
 ```bash
-git commit -c ORIG_HEAD
+git commit --amend
 ```
 
-5. Push it to origin with `--force`.
+3. Push it to origin with `--force-with-lease`.
+
+> Force with lease will block your push if another person already pushed
+> changes on your branch.
 
 ## Gitignore
 
-You want to be sure `.DS_Store` is not committed the next time. You could add
+You want to be sure `.OS` is not committed the next time. You could add
 it to either:
 
 - the project `.gitignore`,
 - or the global `~/.gitignore`.
 
-Since `.DS_Store` is specific to Mac OS X users and not to the project, you are going to exclude it globally.
+Since `.OS` is specific to your system and not to the project, you are going to
+exclude it globally.
+
+## Globally exclude a file from git
+
+1. Check the documentation with:
 
 ```bash
-echo ".DS_Store" >> ~/.gitignore
-git config --global core.excludesfile '~/.gitignore'
+git config --help
 ```
 
-> Note: Ignore rules specific to some environment (e.g. according the IDE) could rather be specified in the `.git/info/exclude`
+> Search for exclude with `/`
+
+2. Check if you have a specific global ignore file with:
+
+```bash
+git config --global --list | grep core.excludesfile
+```
+
+3. Create your ignore file and add a line containing `.OS`.
+
+> Note: Ignore rules specific to some environment (e.g. according the IDE)
+> could rather be specified in the `.git/info/exclude`
 
 ## Prepare a pull request
 
@@ -408,6 +431,8 @@ git config --global core.excludesfile '~/.gitignore'
 3. etc.
 ```
 
+5. Add the person on your left as a reviewer.
+
 ## Unfortunately, your collaborator is busy
 
 Because you need 1 review, you can’t merge your pull request yet. So, you’re
@@ -424,11 +449,12 @@ git checkout master
 git checkout -b refactor/todo-list
 ```
 
-> It's recommanded not to create branch based on other previously created feature or task branch.
+> It's recommanded not to create branch based on other previously created
+> feature or task branch.
 
 ## Refactor (1/2)
 
-Rename the `val todos` to `items` in the `TodoList` component 
+Rename the `val todos` to `items` in the `TodoList` component
 (see `playground/src/main/scala/playground/view/TodoList.scala`).
 
 ## End your day and push a WIP commit
@@ -436,7 +462,7 @@ Rename the `val todos` to `items` in the `TodoList` component
 At the end of the day, that’s interesting to push your code even if it’s still
 WIP.
 
-1. Stage your files on the refactoring (`git add ...`).
+1. Stage your files on the refactoring (`git add …`).
 
 2. Create your WIP commit, you don’t bother with the naming.
 
@@ -444,7 +470,8 @@ WIP.
 git commit -m "WIP"
 ```
 
-> As the file is already under SCM, `git commit -a -m "WIP"` could be used without prio `git add`
+> As the file is already under SCM, `git commit -a -m "WIP"` could be used
+> without prio `git add`
 
 3. Push it to origin.
 
@@ -452,9 +479,11 @@ git commit -m "WIP"
 
 Rename `isCompleted` to `isDone` in the `Todo` model.
 
+> playground/src/main/scala/playground/model/Todo.scala
+
 ## Melt you changes into the WIP commit
 
-1. Stage your files on the refactoring (`git add ...`).
+1. Stage your files on the refactoring (`git add …`).
 
 2. Check that the previous commit is the WIP commit before melting your staged
    changes into it.
@@ -487,7 +516,7 @@ git push origin refactor/todo-list
    to force your modifications to origin with:
 
 ```bash
-git push --force origin refactor/todo-list
+git push --force-with-lease origin refactor/todo-list
 ```
 
 Beware, a force commit is risky, and should not be used outside feature branches.
@@ -516,10 +545,11 @@ You are creating a fix commit instead of amending the last one, so that the
 reviewer will see only new changes and will not have to review everything back
 again.
 
-## Approve the pull request
+## Review and approve the pull request
 
-The person on your right made the changes you requested, you can approve his
-pull request.
+1. Check that the person on your right made the changes you requested
+
+2. Approve his pull request.
 
 ## Merge your pull request with squash
 
@@ -531,14 +561,16 @@ Now that your pull request is approved:
 
 - The first line is:
     - a summary of your modification,
-    - it begins with an action verb.
+    - it begins with an action verb,
+    - keep the PR ref #XX, you’ll be able to see all the commits.
 - The rest is a detail of your modifications:
     - it can contain a list of modifications begining with `-` or `*`,
     - it can link to un issue with its URL.
 
 3. Merge the pull request and then delete the branch with the provided button.
 
-4. Check that you can still access to every commit of the Pull Request in the GitHub UI (history is kept).
+4. Check that you can still access to every commit of the Pull Request in the
+   GitHub UI (history is kept).
 
 ## Get the changes on master on your machine
 
@@ -549,12 +581,13 @@ git checkout master
 git pull
 ```
 
-2. Check that your refactoring is in a single commit on your local master branch (`git log ...`).
+2. Check that your refactoring is in a single commit on your local master
+   branch (`git log …`).
 
 3. Delete your feature branch with:
 
 ```bash
-git branch -d refactor/todo-list
+git branch -D refactor/todo-list
 ```
 
 ## Going back to the visualization arrow
@@ -575,7 +608,8 @@ That means:
 
 - It can be more complex than merging if you have multiple commits.
 - You have to change the history :
-   - you risk (when handling conflicts) to introduce unwanted changes while losing the original (valid) changes forever.
+   - you risk (when handling conflicts) to introduce unwanted changes while
+     losing the original (valid) changes forever.
 - That will lead to a cleaner history.
 - You’ll avoid strange and repetitive merge conflicts in case you merge multiple times.
 
@@ -584,7 +618,7 @@ That means:
 1. Go to the feature branch.
 
 ```bash
-git checkout ...
+git checkout …
 ```
 
 2. Get the remote changes and rebase from master with:
@@ -634,10 +668,14 @@ You can add git aliases in `.gitconfig`, for example:
   p = push origin HEAD
 ```
 
-## Read the manual
+## Continue to learn
+
+- With the manual:
 
 ```bash
-man git branch
-man git rebase
+git branch --help
+git rebase --help
 …
 ```
+
+- With stack overflow
