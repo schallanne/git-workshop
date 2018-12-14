@@ -658,6 +658,82 @@ only one commit, the rebase is now done.
 You now have time to check the **arrow** pull request of the person on your
 right. Whenever your pull request is validated, merge it.
 
+## Start a refactoring
+
+Now, you will start a **huge** refactoring of our application.
+
+1. Create a new branch `task/refactor-playground`
+
+```bash
+git checkout -b task/refactor-playground
+```
+
+2. Create a file `refactoring.txt`
+
+3. Add this file into git and commit your changes
+
+```bash
+git add refactoring.txt
+git commit -m "Refactoring - Step 1 (WIP)"
+```
+
+4. Edit file `project/build.properties` and replace `1.1.2` by `1.2.7`
+
+5. Commit your changes into git
+
+```bash
+git add project/build.properties
+git commit -m "Update to sbt v1.2.7"
+```
+
+6. Create a new file `refactoring2.txt` and commit your changes
+
+```bash
+git add refactoring2.txt
+git commit -m "Refactoring - Step 2 (WIP)"
+```
+
+## Cherry picking
+
+One of your colleagues needs your changes in the file build.properties.
+You need to extract the commit in a new branch.
+
+1. Retrieve your commit with changes for build.properties
+
+```bash
+git log -n 3 --oneline
+$ 6e13277 (HEAD -> feature/refactor-playground) Refactoring - Step 2 (WIP)
+$ 19bd652 Update to sbt v1.2.7
+$ e590939 Refactoring - Step 1 (WIP)
+```
+
+`19bd652` is the commit ID for your changes about sbt version.
+
+2. Create a new branch from master
+
+```bash
+git branch task/update-sbt-127 master
+```
+
+3. Move your working copy to the created branch
+
+```bash
+git checkout task/update-sbt-127
+```
+
+4. Insert your previous commit into your branch
+
+```bash
+git cherry-pick <your-commit-id>
+```
+
+5. Check that your commit is in your branch
+
+```bash
+git log -n 1 --oneline
+$ 3a8f6de (HEAD -> task/update-sbt-127) Update to sbt v1.2.7
+```
+
 ## Being faster with git config aliases
 
 You can add git aliases in `.gitconfig`, for example:
