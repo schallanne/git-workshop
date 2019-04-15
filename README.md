@@ -1,5 +1,5 @@
 ---
-title: Git workshop test
+title: Git workshop test tgi
 date: \today
 fontsize: 11pt
 monofont: Menlo
