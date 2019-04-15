@@ -20,11 +20,15 @@ object TodoList {
       )
     )
 
-    val testMaster: Int = 7
-
     lazy val result =
       <div class={ Style.root.htmlClass }>
         <p>You can add or remove todo items.</p>
+
+        <div>{ todos.map(_.map { item =>
+          val color = if (item.isCompleted) "green" else "silver"
+
+          <span style={s"color:$color"}>=</span>
+        }) }></div>
 
         { addTodo }
 
