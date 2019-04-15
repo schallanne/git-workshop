@@ -20,9 +20,15 @@ object TodoList {
       )
     )
 
+    val lengthOfArrow: Rx[String] = todos.map {
+      case res => "=" * res.length
+    }
+
     lazy val result =
       <div class={ Style.root.htmlClass }>
         <p>You can add or remove todo items.</p>
+
+        <div>{ lengthOfArrow }></div>
 
         { addTodo }
 
