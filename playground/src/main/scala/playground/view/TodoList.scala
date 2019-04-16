@@ -13,7 +13,7 @@ import playground.util.Colors
 
 object TodoList {
   def apply(): Node = {
-    val todos: Var[Seq[Todo]] = Var(
+    val items: Var[Seq[Todo]] = Var(
       Seq(
         Todo("learn usefull git commands", isCompleted = false),
         Todo("play with Scala.js", isCompleted = false)
@@ -31,7 +31,7 @@ object TodoList {
         </div>
 
         <ul class={ Style.todos.htmlClass }>
-          { todos.map(_.zipWithIndex.map {
+          { items.map(_.zipWithIndex.map {
             case (todo, index) => todoItem(todo, index)
           } ) }
         </ul>
@@ -48,7 +48,7 @@ object TodoList {
               input.value.trim match {
                 case "" =>
                 case todo =>
-                  todos.update(Todo(todo, isCompleted = false) +: _)
+                  items.update(Todo(todo, isCompleted = false) +: _)
                   input.value = ""
               }
             case _ =>
@@ -57,7 +57,7 @@ object TodoList {
       />
 
     lazy val presentation =
-      todos.map {
+      items.map {
         case xs =>
           val totalCount = xs.length
           val uncompletedTodos = xs.filter(_.isCompleted == false)
@@ -87,7 +87,7 @@ object TodoList {
         ) }
       >
         <span
-          onclick={ () => todos.update { xs =>
+          onclick={ () => items.update { xs =>
             xs.updated(index, todo.copy(isCompleted = !todo.isCompleted))
           } }
         >
@@ -96,7 +96,7 @@ object TodoList {
 
         <button
           class={ Style.removeTodo.htmlClass }
-          onclick={ () => todos.update(_.patch(index, Nil, 1)) }
+          onclick={ () => items.update(_.patch(index, Nil, 1)) }
         >
           ✗
         </button>
