@@ -15,16 +15,20 @@ object TodoList {
   def apply(): Node = {
     val items: Var[Seq[Todo]] = Var(
       Seq(
-        Todo("learn usefull git commands", isCompleted = false),
-        Todo("play with Scala.js", isCompleted = false)
+        Todo("learn usefull git commands", isFinished = false),
+        Todo("play with Scala.js", isFinished = false)
       )
     )
-
-    val testMaster: Int = 7
 
     lazy val result =
       <div class={ Style.root.htmlClass }>
         <p>You can add or remove todo items.</p>
+
+        <div>{ items.map(_.map { item =>
+          val color = if (item.isFinished) "green" else "silver"
+
+          <span style={s"color:$color"}>=</span>
+        }) }></div>
 
         { addTodo }
 
@@ -50,7 +54,7 @@ object TodoList {
               input.value.trim match {
                 case "" =>
                 case todo =>
-                  items.update(Todo(todo, isCompleted = false) +: _)
+                  items.update(Todo(todo, isFinished = false) +: _)
                   input.value = ""
               }
             case _ =>
@@ -62,7 +66,7 @@ object TodoList {
       items.map {
         case xs =>
           val totalCount = xs.length
-          val uncompletedTodos = xs.filter(_.isCompleted == false)
+          val uncompletedTodos = xs.filter(_.isFinished == false)
           val uncompletedCount = uncompletedTodos.length
 
           val among =
@@ -85,12 +89,12 @@ object TodoList {
       <li
         class={ StyleUtil.classes(
           Style.todo.htmlClass -> true,
-          Style.completedTodo.htmlClass -> todo.isCompleted
+          Style.completedTodo.htmlClass -> todo.isFinished
         ) }
       >
         <span
           onclick={ () => items.update { xs =>
-            xs.updated(index, todo.copy(isCompleted = !todo.isCompleted))
+            xs.updated(index, todo.copy(isFinished = !todo.isFinished))
           } }
         >
           { todo.title }
