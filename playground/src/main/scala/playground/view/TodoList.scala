@@ -20,6 +20,8 @@ object TodoList {
       )
     )
 
+    val testMaster: Int = 7
+
     lazy val result =
       <div class={ Style.root.htmlClass }>
         <p>You can add or remove todo items.</p>
